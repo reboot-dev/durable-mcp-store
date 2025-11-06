@@ -12,7 +12,7 @@ from backend.src.product import ProductCatalogServicer
 from backend.src.order import OrdersServicer
 from store.v1.store import Product
 from store.v1.store_rbt import ProductCatalog, Cart, Orders
-from constants import PRODUCT_CATALOG_ID
+from constants import PRODUCT_CATALOG_ID, USER_ID
 
 mcp = DurableMCP(path="/mcp")
 
@@ -48,9 +48,9 @@ def show_products(search_query: str, context: DurableContext) -> list[UIResource
 
 
 @mcp.tool()
-def show_cart() -> list[UIResource]:
+def show_cart(context: DurableContext) -> list[UIResource]:
     """Display the shopping cart in an interactive UI."""
-    iframe_url = f"http://localhost:3000/cart?user_id={USER_ID}"
+    iframe_url = f"http://localhost:3000/cart?cart_id={USER_ID}"
 
     ui_resource = create_ui_resource(
         {
@@ -66,9 +66,9 @@ def show_cart() -> list[UIResource]:
 
 
 @mcp.tool()
-def show_orders() -> list[UIResource]:
+def show_orders(context: DurableContext) -> list[UIResource]:
     """Display past orders in an interactive UI."""
-    iframe_url = f"http://localhost:3000/orders?user_id={USER_ID}"
+    iframe_url = f"http://localhost:3000/orders?orders_id={USER_ID}"
 
     ui_resource = create_ui_resource(
         {
@@ -109,7 +109,7 @@ async def add_item_to_cart(
         ),
     )
 
-    iframe_url = f"http://localhost:3000/cart?user_id={USER_ID}"
+    iframe_url = f"http://localhost:3000/cart?cart_id={cart_id}"
 
     ui_resource = create_ui_resource(
         {

@@ -3,7 +3,7 @@ import { useCart } from "../../api/store/v1/store_rbt_react";
 
 const Cart = () => {
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("user_id") || "default-cart";
+  const id = searchParams.get("cart_id") || "default-cart";
 
   const { useGetItems, removeItem, updateItemQuantity } = useCart({ id });
 

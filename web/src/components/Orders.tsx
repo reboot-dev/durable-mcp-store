@@ -3,7 +3,7 @@ import { useOrders } from "../../api/store/v1/store_rbt_react";
 
 const Orders = () => {
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("user_id") || "default-orders";
+  const id = searchParams.get("orders_id") || "default-orders";
   
   const { useGetOrders } = useOrders({ id });
   const { response } = useGetOrders();
