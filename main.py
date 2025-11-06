@@ -1,6 +1,7 @@
 import asyncio
 import os
 import random
+import time
 import urllib.parse
 from mcp_ui_server import create_ui_resource
 from mcp_ui_server.core import UIResource
@@ -10,7 +11,7 @@ from reboot.mcp.server import DurableMCP, DurableContext
 from backend.src.cart import CartServicer
 from backend.src.product import ProductCatalogServicer
 from backend.src.order import OrdersServicer
-from store.v1.store import Product
+from store.v1.store import Product, CartItem, Order, Address
 from store.v1.store_rbt import ProductCatalog, Cart, Orders
 from constants import PRODUCT_CATALOG_ID, USER_ID
 
@@ -18,13 +19,15 @@ mcp = DurableMCP(path="/mcp")
 
 
 @mcp.tool()
-def show_products(search_query: str, context: DurableContext) -> list[UIResource]:
+def show_products(
+    search_query: str,
+    context: DurableContext,
+) -> list[UIResource]:
     """Display products matching the search query in an interactive UI.
 
     Args:
         search_query: The search term to filter products (e.g., 'shirts', 
-        'pants', 'blue')
-        context: The durable context for the operation
+        'pants', 'blue').
     """
     encoded_query = urllib.parse.quote(search_query or "")
 
@@ -41,7 +44,8 @@ def show_products(search_query: str, context: DurableContext) -> list[UIResource
                 "type": "externalUrl",
                 "iframeUrl": iframe_url
             },
-            "encoding": "text"
+            "encoding":
+                "text"
         }
     )
     return [ui_resource]
@@ -90,22 +94,27 @@ async def add_item_to_cart(
     """Add an item to the shopping cart.
 
     Args:
-        product_id: The ID of the product to add
-        quantity: The quantity to add (default: 1)
+        product_id: The ID of the product to add.
+        quantity: The quantity to add (default: 1).
     """
     cart_id = USER_ID
 
-    # Verify product exists.
-    await ProductCatalog.ref(PRODUCT_CATALOG_ID).get_product(
-        context,
-        product_id=product_id,
-    )
+    get_product_response = await ProductCatalog.ref(PRODUCT_CATALOG_ID
+                                                   ).get_product(
+                                                       context,
+                                                       product_id=product_id,
+                                                   )
+    product = get_product_response.product
 
     await Cart.ref(cart_id).add_item(
         context,
         item=CartItem(
             product_id=product_id,
             quantity=quantity,
+            added_at=int(time.time() * 1000),
+            name=product.name,
+            price_cents=product.price_cents,
+            picture=product.picture,
         ),
     )
 
@@ -124,9 +133,10 @@ async def add_item_to_cart(
     return [ui_resource]
 
 
-# Mock stateless functions for checkout workflow.
+# Mock functions for checkout workflow.
 async def get_shipping_quote(items: list, address: dict) -> dict:
     """Mock function to get shipping quote."""
+    # In real implementation, this would call a shipping API.
     total_weight = len(items) * 2  # Mock weight calculation.
     base_cost = 500  # $5.00 base.
     weight_cost = total_weight * 50  # $0.50 per pound.
@@ -220,6 +230,7 @@ async def checkout(
             },
             total_cents,
         )
+
     # Simulate failure for testing retry logic.
     # To simulate failure set the environment variable FAIL_CHECKOUT=anything.
     if os.environ.get("FAIL_CHECKOUT"):
@@ -232,9 +243,6 @@ async def checkout(
         type=dict,
     )
 
-    if charge_result.get("error"):
-        raise ValueError(f"Failed to charge card: {charge_result['error']}")
-
     async def ship() -> dict:
         return await ship_order(items, address, shipping_quote["carrier"])
 
@@ -244,9 +252,6 @@ async def checkout(
         ship,
         type=dict,
     )
-
-    if shipping_result.get("error"):
-        raise ValueError(f"Failed to ship order: {shipping_result['error']}")
 
     order_id = f"order_{random.randint(100000, 999999)}"
 
@@ -259,7 +264,7 @@ async def checkout(
         total_cents=total_cents,
         tracking_number=shipping_result["tracking_number"],
         carrier=shipping_result["carrier"],
-        created_at=int(asyncio.get_event_loop().time()),
+        created_at=int(time.time() * 1000),
         shipping_address=Address(
             street_address=shipping_street_address,
             city=shipping_city,
@@ -296,6 +301,11 @@ async def checkout(
 
 async def initialize(context: InitializeContext):
     """Initialize the product catalog with mock products."""
+
+    catalog, _ = await ProductCatalog.create_catalog(
+        context,
+        PRODUCT_CATALOG_ID,
+    )
 
     products = [
         Product(
@@ -530,28 +540,12 @@ async def initialize(context: InitializeContext):
         ),
     ]
 
-    # for product in products:
-    #     await ProductCatalog.ref(PRODUCT_CATALOG_ID).idempotently(
-    #         f"add-product-{product.id}"
-    #     ).add_product(
-    #         context,
-    #         product=product,
-    #     )
-
-    product = Product(
-            id="bags-003",
-            name="Gym Duffel Bag",
-            description="Large gym duffel bag",
-            picture="https://pngimg.com/uploads/bag/bag_PNG6399.png",
-            price_cents=4899,
-            categories=["bags", "sports", "gym"],
-            stock_quantity=25,
+    for product in products:
+        await catalog.idempotently(f"add-product-{product.id}").add_product(
+            context,
+            product=product,
         )
 
-    await ProductCatalog.ref(PRODUCT_CATALOG_ID).add_product(
-        context,
-        product=product
-    )
 
 async def main():
     await mcp.application(

@@ -3,13 +3,15 @@ import { useCart } from "../../api/store/v1/store_rbt_react";
 
 const Cart = () => {
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("cart_id") || "default-cart";
+  const id = searchParams.get("cart_id");
+  if (id === null) {
+    throw new Error("cart_id is required in query params");
+  }
 
   const { useGetItems, removeItem, updateItemQuantity } = useCart({ id });
-
   const { response } = useGetItems();
 
-  if (response === undefined) return <>Loading...</>;
+  if (response === undefined) return <>"Loading..."</>;
 
   const items = response.items?.elements ?? [];
 
@@ -37,7 +39,8 @@ const Cart = () => {
         {
           type: "prompt",
           payload: {
-            prompt: `The quantity of product ${productId} has been updated to ${newQuantity} in my cart.`,
+            prompt: `The quantity of product ${productId} has been updated to
+                    ${newQuantity} in my cart.`,
           },
         },
         "*"
@@ -108,7 +111,10 @@ const Cart = () => {
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xs font-semibold text-gray-900 line-clamp-1">
+                  <h3
+                    className="text-xs font-semibold text-gray-900 
+                              line-clamp-1"
+                  >
                     {item.name || item.productId}
                   </h3>
                   <p className="text-xs text-gray-600">
@@ -130,7 +136,9 @@ const Cart = () => {
                         Number(item.quantity ?? 1n) - 1
                       )
                     }
-                    className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold"
+                    className="w-5 h-5 flex items-center justify-center
+                              rounded-full bg-gray-200 hover:bg-gray-300
+                              text-gray-800 text-xs font-bold"
                   >
                     −
                   </button>
@@ -144,7 +152,9 @@ const Cart = () => {
                         Number(item.quantity ?? 0n) + 1
                       )
                     }
-                    className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold"
+                    className="w-5 h-5 flex items-center justify-center
+                              rounded-full bg-gray-200 hover:bg-gray-300
+                              text-gray-800 text-xs font-bold"
                   >
                     +
                   </button>
@@ -175,7 +185,8 @@ const Cart = () => {
 
             <button
               onClick={checkout}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded text-xs font-semibold transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5
+                        rounded text-xs font-semibold transition-colors"
             >
               Checkout
             </button>

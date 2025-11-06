@@ -11,16 +11,25 @@ from store.v1.store import (
     EmptyCartRequest,
     EmptyCartResponse,
     CartItem,
+    Product,
 )
 from store.v1.store_rbt import Cart, ProductCatalog
 from reboot.aio.auth.authorizers import allow
 from reboot.aio.contexts import ReaderContext, WriterContext
 from constants import PRODUCT_CATALOG_ID
 
+
 class CartServicer(Cart.Servicer):
 
     def authorizer(self):
         return allow()
+
+    async def create_cart(
+        self,
+        context: WriterContext,
+        request: CreateCartRequest,
+    ) -> None:
+        self.state.items = []
 
     async def add_item(
         self,
@@ -29,7 +38,9 @@ class CartServicer(Cart.Servicer):
     ) -> AddItemResponse:
 
         try:
-            product_response = await ProductCatalog.ref(PRODUCT_CATALOG_ID).get_product(
+            product_response = await ProductCatalog.ref(
+                PRODUCT_CATALOG_ID
+            ).get_product(
                 context,
                 product_id=request.item.product_id,
             )
@@ -80,12 +91,10 @@ class CartServicer(Cart.Servicer):
         context: WriterContext,
         request: RemoveItemRequest,
     ) -> RemoveItemResponse:
-        new_items = [
-            item for item in self.state.items
-            if item.product_id != request.product_id
-        ]
-        del self.state.items[:]
-        self.state.items.extend(new_items)
+        for i, item in enumerate(self.state.items):
+            if item.product_id == request.product_id:
+                del self.state.items[i]
+                break
 
         return RemoveItemResponse()
 

@@ -1,12 +1,7 @@
 from store.v1.store import (
-    ListProductsRequest,
-    ListProductsResponse,
-    GetProductRequest,
-    GetProductResponse,
-    SearchProductsRequest,
-    SearchProductsResponse,
-    AddProductRequest,
-    AddProductResponse
+    ListProductsRequest, ListProductsResponse, GetProductRequest,
+    GetProductResponse, SearchProductsRequest, SearchProductsResponse,
+    AddProductRequest, AddProductResponse
 )
 from store.v1.store_rbt import ProductCatalog
 from reboot.aio.auth.authorizers import allow
@@ -14,8 +9,16 @@ from reboot.aio.contexts import ReaderContext, WriterContext
 
 
 class ProductCatalogServicer(ProductCatalog.Servicer):
+
     def authorizer(self):
         return allow()
+
+    async def create_catalog(
+        self,
+        context: WriterContext,
+        request: CreateCatalogRequest,
+    ) -> None:
+        self.state.products = []
 
     async def list_products(
         self,
@@ -44,9 +47,13 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         matching_products = []
 
         for product in self.state.products:
-            if (query_lower in product.name.lower() or
-                query_lower in product.description.lower() or
-                any(query_lower in category.lower() for category in product.categories)):
+            if (
+                query_lower in product.name.lower() or
+                query_lower in product.description.lower() or any(
+                    query_lower in category.lower()
+                    for category in product.categories
+                )
+            ):
                 matching_products.append(product)
 
         return SearchProductsResponse(products=matching_products)
@@ -58,7 +65,7 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
     ) -> AddProductResponse:
         for product in self.state.products:
             if product.id == request.product.id:
-                raise ValueError(f"Product with ID '{request.product.id}' already exists")
+                return AddProductResponse()
 
         self.state.products.append(request.product)
 

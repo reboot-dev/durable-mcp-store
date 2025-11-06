@@ -3,8 +3,11 @@ import { useOrders } from "../../api/store/v1/store_rbt_react";
 
 const Orders = () => {
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("orders_id") || "default-orders";
-  
+  const id = searchParams.get("orders_id");
+  if (id === null) {
+    throw new Error("orders_id is required in query params");
+  }
+
   const { useGetOrders } = useOrders({ id });
   const { response } = useGetOrders();
 
@@ -34,8 +37,12 @@ const Orders = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="text-4xl mb-2">📦</div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">No orders yet</h2>
-          <p className="text-sm text-gray-600">Your order history will appear here</p>
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+            No orders yet
+          </h2>
+          <p className="text-sm text-gray-600">
+            Your order history will appear here
+          </p>
         </div>
       </div>
     );
@@ -66,7 +73,9 @@ const Orders = () => {
               </div>
 
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Items:</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                  Items:
+                </h3>
                 <div className="space-y-2">
                   {(order.items?.elements ?? []).map((item, index: number) => (
                     <div key={index} className="flex items-center gap-3">
@@ -98,22 +107,33 @@ const Orders = () => {
               <div className="border-t border-gray-200 pt-3 space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="text-gray-900">{formatPrice(order.subtotalCents)}</span>
+                  <span className="text-gray-900">
+                    {formatPrice(order.subtotalCents)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping:</span>
-                  <span className="text-gray-900">{formatPrice(order.shippingCostCents)}</span>
+                  <span className="text-gray-900">
+                    {formatPrice(order.shippingCostCents)}
+                  </span>
                 </div>
                 <div className="flex justify-between font-semibold text-base">
                   <span className="text-gray-900">Total:</span>
-                  <span className="text-gray-900">{formatPrice(order.totalCents)}</span>
+                  <span className="text-gray-900">
+                    {formatPrice(order.totalCents)}
+                  </span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-gray-200 text-sm space-y-1">
+              <div
+                className="mt-4 pt-3 border-t border-gray-200 text-sm 
+                          space-y-1"
+              >
                 <div>
                   <span className="text-gray-600">Tracking Number: </span>
-                  <span className="text-gray-900 font-mono text-xs">{order.trackingNumber}</span>
+                  <span className="text-gray-900 font-mono text-xs">
+                    {order.trackingNumber}
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-600">Carrier: </span>
@@ -122,8 +142,10 @@ const Orders = () => {
                 <div>
                   <span className="text-gray-600">Shipping Address: </span>
                   <span className="text-gray-900">
-                    {order.shippingAddress?.streetAddress}, {order.shippingAddress?.city},{" "}
-                    {order.shippingAddress?.state} {order.shippingAddress?.zipCode},{" "}
+                    {order.shippingAddress?.streetAddress},{" "}
+                    {order.shippingAddress?.city},{" "}
+                    {order.shippingAddress?.state}{" "}
+                    {order.shippingAddress?.zipCode},{" "}
                     {order.shippingAddress?.country}
                   </span>
                 </div>

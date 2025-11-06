@@ -1,9 +1,7 @@
 import time
 from store.v1.store import (
-    GetOrdersRequest,
-    GetOrdersResponse,
-    AddOrderRequest,
-    AddOrderResponse,
+    GetOrdersRequest, GetOrdersResponse, AddOrderRequest, AddOrderResponse,
+    CreateOrdersRequest
 )
 from store.v1.store_rbt import Orders
 from reboot.aio.auth.authorizers import allow
@@ -15,16 +13,19 @@ class OrdersServicer(Orders.Servicer):
     def authorizer(self):
         return allow()
 
+    async def create_orders(
+        self,
+        context: WriterContext,
+        request: CreateOrdersRequest,
+    ) -> None:
+        self.state.orders = []
+
     async def add_order(
         self,
         context: WriterContext,
         request: AddOrderRequest,
     ) -> AddOrderResponse:
-        order = request.order
-        if order.created_at == 0:
-            order.created_at = int(time.time())
-
-        self.state.orders.append(order)
+        self.state.orders.append(request.order)
 
         return AddOrderResponse()
 
@@ -34,4 +35,3 @@ class OrdersServicer(Orders.Servicer):
         request: GetOrdersRequest,
     ) -> GetOrdersResponse:
         return GetOrdersResponse(orders=list(self.state.orders))
-        

@@ -16,13 +16,14 @@ const Order = () => {
     );
   }
 
-  // Parse: orderId|lastFour|subtotalCents|shippingCents|totalCents|trackingNumber
+  // Format:
+  // orderId|lastFour|subtotalCents|shippingCents|totalCents|trackingNumber
   const [
-    orderId, 
-    lastFour, 
-    subtotalCents, 
-    shippingCents, 
-    totalCents, 
+    orderId,
+    lastFour,
+    subtotalCents,
+    shippingCents,
+    totalCents,
     trackingNumber,
   ] = data.split("|");
 
@@ -46,11 +47,15 @@ const Order = () => {
           <div className="border-t border-b border-gray-200 py-3 my-3">
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Subtotal:</span>
-              <span className="text-gray-900">{formatPrice(subtotalCents)}</span>
+              <span className="text-gray-900">
+                {formatPrice(subtotalCents)}
+              </span>
             </div>
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Shipping:</span>
-              <span className="text-gray-900">{formatPrice(shippingCents)}</span>
+              <span className="text-gray-900">
+                {formatPrice(shippingCents)}
+              </span>
             </div>
             <div className="flex justify-between text-base font-bold">
               <span className="text-gray-900">Total:</span>
@@ -75,9 +80,8 @@ const Order = () => {
 
           <div className="mt-4 p-3 bg-blue-50 rounded">
             <p className="text-xs text-blue-800">
-              Your order has been confirmed and will be shipped soon. 
-              You'll receive a shipping notification once your package is on its 
-              way.
+              Your order has been confirmed and will be shipped soon. You'll
+              receive a shipping notification once your package is on its way.
             </p>
           </div>
         </div>

@@ -32,13 +32,14 @@ const Products = () => {
     return `$${dollars.toFixed(2)}`;
   };
 
-  const addToCart = (product: typeof products[number]) => {
+  const addToCart = (product: (typeof products)[number]) => {
     if (window.parent) {
       window.parent.postMessage(
         {
           type: "prompt",
           payload: {
-            prompt: `Add one ${product.name} to my cart (product ID: ${product.id})`,
+            prompt: `Add one ${product.name} to my cart 
+                    (product ID: ${product.id})`,
           },
         },
         "*"
@@ -76,7 +77,8 @@ const Products = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id ?? ""}
-              className="bg-white rounded shadow-sm overflow-hidden hover:shadow-md transition-shadow flex h-32"
+              className="bg-white rounded shadow-sm overflow-hidden
+                        hover:shadow-md transition-shadow flex h-32"
             >
               <img
                 src={product.picture ?? ""}
@@ -85,7 +87,10 @@ const Products = () => {
               />
               <div className="p-2 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1">
+                  <h3
+                    className="text-sm font-semibold text-gray-900 mb-1
+                              line-clamp-1"
+                  >
                     {product.name ?? "Unknown"}
                   </h3>
                   <p className="text-xs text-gray-600 mb-2 line-clamp-2">
@@ -109,7 +114,9 @@ const Products = () => {
 
                   <button
                     onClick={() => addToCart(product)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors whitespace-nowrap"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3
+                              py-1.5 rounded text-xs font-medium
+                              transition-colors whitespace-nowrap"
                     disabled={product.stockQuantity === 0n}
                   >
                     {(product.stockQuantity ?? 0n) > 0n
