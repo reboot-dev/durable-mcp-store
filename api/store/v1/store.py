@@ -57,6 +57,9 @@ class EmptyCartRequest(BaseModel):
 class EmptyCartResponse(BaseModel):
     pass
 
+class CreateCartRequest(BaseModel):
+    pass
+
 CartMethods = Methods(
     add_item=Writer(
         request=AddItemRequest,
@@ -77,6 +80,11 @@ CartMethods = Methods(
     empty_cart=Writer(
         request=EmptyCartRequest,
         response=EmptyCartResponse,
+    ),
+    create_cart=Writer(
+        request=CreateCartRequest,
+        response=None,
+        factory=True,
     ),
 )
 
@@ -120,6 +128,10 @@ class AddProductRequest(BaseModel):
 class AddProductResponse(BaseModel):
     pass
 
+class CreateCatalogRequest(BaseModel):
+    pass
+
+
 ProductCatalogMethods = Methods(
     list_products=Reader(
         request=ListProductsRequest,
@@ -136,6 +148,11 @@ ProductCatalogMethods = Methods(
     add_product=Writer(
         request=AddProductRequest,
         response=AddProductResponse,
+    ),
+    create_catalog=Writer(
+        request=CreateCatalogRequest,
+        response=None,
+        factory=True,
     )
 )
 
@@ -177,6 +194,9 @@ class GetOrdersRequest(BaseModel):
 class GetOrdersResponse(BaseModel):
     orders: list[Order] = Field(tag=1)
 
+class CreateOrdersRequest(BaseModel):
+    pass
+
 OrdersMethods = Methods(
     add_order=Writer(
         request=AddOrderRequest,
@@ -185,6 +205,11 @@ OrdersMethods = Methods(
     get_orders=Reader(
         request=GetOrdersRequest,
         response=GetOrdersResponse,
+    ),
+    create_orders=Writer(
+        request=CreateOrdersRequest,
+        response=None,
+        factory=True,
     ),
 )
 

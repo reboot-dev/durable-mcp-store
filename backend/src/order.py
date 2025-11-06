@@ -15,6 +15,13 @@ class OrdersServicer(Orders.Servicer):
     def authorizer(self):
         return allow()
 
+    async def create_orders(
+        self,
+        context: WriterContext,
+        request: Orders.CreateOrdersRequest,
+    ) -> None:
+        self.state.orders = []
+
     async def add_order(
         self,
         context: WriterContext,

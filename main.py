@@ -10,7 +10,7 @@ from reboot.mcp.server import DurableMCP, DurableContext
 from backend.src.cart import CartServicer
 from backend.src.product import ProductCatalogServicer
 from backend.src.order import OrdersServicer
-from store.v1.store import Product
+from store.v1.store import Product, CartItem, Order, Address
 from store.v1.store_rbt import ProductCatalog, Cart, Orders
 from constants import PRODUCT_CATALOG_ID, USER_ID
 
@@ -98,14 +98,20 @@ async def add_item_to_cart(
     # Verify product exists.
     await ProductCatalog.ref(PRODUCT_CATALOG_ID).get_product(
         context,
-        product_id=product_id,
+        ProductCatalog.GetProductRequest(product_id=product_id),
     )
 
     await Cart.ref(cart_id).add_item(
         context,
-        item=CartItem(
-            product_id=product_id,
-            quantity=quantity,
+        Cart.AddItemRequest(
+            item=CartItem(
+                product_id=product_id,
+                quantity=quantity,
+                added_at=100,
+                name="name",
+                price_cents=100,
+                picture="picture",
+            )
         ),
     )
 
@@ -180,9 +186,9 @@ async def checkout(
         shipping_zip_code: Shipping zip code
     """
     cart_id = USER_ID
-    order_id = USER_ID
+    order_state_id = USER_ID
 
-    cart_response = await Cart.ref(cart_id).get_items(context)
+    cart_response = await Cart.ref(cart_id).get_items(context, Cart.GetItemsRequest())
     items = list(cart_response.items)
 
     if not items:
@@ -269,9 +275,9 @@ async def checkout(
         ),
     )
 
-    await Orders.ref(order_id).add_order(context, order=order)
+    await Orders.ref(order_state_id).add_order(context, Orders.AddOrderRequest(order=order))
 
-    await Cart.ref(cart_id).empty_cart(context)
+    await Cart.ref(cart_id).empty_cart(context, Cart.EmptyCartRequest())
 
     encoded_order = urllib.parse.quote(
         f"{order_id}|{charge_result}|{subtotal_cents}|"
@@ -530,28 +536,18 @@ async def initialize(context: InitializeContext):
         ),
     ]
 
-    # for product in products:
-    #     await ProductCatalog.ref(PRODUCT_CATALOG_ID).idempotently(
-    #         f"add-product-{product.id}"
-    #     ).add_product(
-    #         context,
-    #         product=product,
-    #     )
+    await Cart.create_cart(context, Cart.CreateCartRequest(), USER_ID)
+    await Orders.create_orders(context, Orders.CreateOrdersRequest(), USER_ID)
 
-    product = Product(
-            id="bags-003",
-            name="Gym Duffel Bag",
-            description="Large gym duffel bag",
-            picture="https://pngimg.com/uploads/bag/bag_PNG6399.png",
-            price_cents=4899,
-            categories=["bags", "sports", "gym"],
-            stock_quantity=25,
+    catalog, _ = await ProductCatalog.create_catalog(context, ProductCatalog.CreateCatalogRequest(), PRODUCT_CATALOG_ID)
+
+    for product in products:
+        await catalog.idempotently(
+            f"add-product-{product.id}"
+        ).add_product(
+            context,
+            ProductCatalog.AddProductRequest(product=product),
         )
-
-    await ProductCatalog.ref(PRODUCT_CATALOG_ID).add_product(
-        context,
-        product=product
-    )
 
 async def main():
     await mcp.application(

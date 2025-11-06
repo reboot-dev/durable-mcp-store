@@ -17,6 +17,9 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
     def authorizer(self):
         return allow()
 
+    async def create_catalog(self, context, request) -> None:
+        self.state.products = []
+
     async def list_products(
         self,
         context: ReaderContext,
@@ -28,10 +31,10 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         self,
         context: ReaderContext,
         request: GetProductRequest,
-    ) -> GetProductResponse:
+    ) -> ProductCatalog.GetProductResponse:
         for product in self.state.products:
             if request.product_id == product.id:
-                return GetProductResponse(product=product)
+                return product
 
         raise ValueError(f"No product found with ID '{request.product_id}'")
 

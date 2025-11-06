@@ -11,6 +11,7 @@ from store.v1.store import (
     EmptyCartRequest,
     EmptyCartResponse,
     CartItem,
+    Product,
 )
 from store.v1.store_rbt import Cart, ProductCatalog
 from reboot.aio.auth.authorizers import allow
@@ -22,6 +23,9 @@ class CartServicer(Cart.Servicer):
     def authorizer(self):
         return allow()
 
+    async def create_cart(self, context, request) -> None:
+        self.state.items = []
+
     async def add_item(
         self,
         context: WriterContext,
@@ -31,9 +35,10 @@ class CartServicer(Cart.Servicer):
         try:
             product_response = await ProductCatalog.ref(PRODUCT_CATALOG_ID).get_product(
                 context,
-                product_id=request.item.product_id,
+                ProductCatalog.GetProductRequest(product_id=request.item.product_id,),
             )
-            product = product_response.product
+            assert isinstance(product_response, Product)
+            product = product_response
         except Exception as e:
             raise ValueError(
                 f"Failed to fetch product {request.item.product_id}: {str(e)}"
