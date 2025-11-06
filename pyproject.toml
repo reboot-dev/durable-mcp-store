@@ -1,0 +1,12 @@
+[project]
+name = "durable-mcp-checkout"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12.11"
+dependencies = [
+    "durable-mcp>=0.5.2",
+    "mcp==1.19.0,",
+    "uuid7-standard>=1.1.0", # Latest as of 2025/09/30.
+    "mcp-ui-server>=0.1.0",
+]

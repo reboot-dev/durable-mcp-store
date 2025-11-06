@@ -1,0 +1,17 @@
+
+generate api/
+
+# Tell `rbt` where to output its generated files.
+
+# The paths are different for backend and frontend code.
+generate --python=api/
+generate --react=web/api
+
+dev run --python --application=main.py
+dev run --watch=**/\*.py
+dev run --name=durable-mcp-store
+
+# TODO(riley): delete this.
+dev run --no-chaos
+
+dev expunge --name=durable-mcp-store
