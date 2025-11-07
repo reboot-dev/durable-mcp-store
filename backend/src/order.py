@@ -34,4 +34,4 @@ class OrdersServicer(Orders.Servicer):
         context: ReaderContext,
         request: GetOrdersRequest,
     ) -> GetOrdersResponse:
-        return GetOrdersResponse(orders=list(self.state.orders))
+        return GetOrdersResponse(orders=self.state.orders)

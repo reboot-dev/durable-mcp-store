@@ -20,6 +20,7 @@ from reboot.aio.contexts import ReaderContext, WriterContext
 from constants import PRODUCT_CATALOG_ID
 from rbt.v1alpha1.errors_pb2 import NotFound
 
+
 class CartServicer(Cart.Servicer):
 
     def authorizer(self):
@@ -47,7 +48,10 @@ class CartServicer(Cart.Servicer):
             )
             product = product_response.product
         except Exception as e:
-            return NotFound()
+            raise Cart.CreateCartAborted(
+                NotFound(),
+                message=f"Product not found: {request.item.product_id}"
+            )
 
         for existing_item in self.state.items:
             if existing_item.product_id == request.item.product_id:
@@ -57,7 +61,6 @@ class CartServicer(Cart.Servicer):
         new_item = CartItem(
             product_id=request.item.product_id,
             quantity=request.item.quantity,
-            added_at=int(time.time() * 1000),
             name=product.name,
             price_cents=product.price_cents,
             picture=product.picture,
@@ -102,6 +105,6 @@ class CartServicer(Cart.Servicer):
         context: WriterContext,
         request: EmptyCartRequest,
     ) -> EmptyCartResponse:
-        del self.state.items[:]
+        self.state.items = []
 
         return EmptyCartResponse()

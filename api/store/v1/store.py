@@ -19,7 +19,6 @@ from reboot.api import (
 class CartItem(BaseModel):
     product_id: str = Field(tag=1)
     quantity: int = Field(tag=2)
-    added_at: int = Field(tag=3)
     name: str = Field(tag=4)
     price_cents: int = Field(tag=5)
     picture: str = Field(tag=6)
@@ -176,7 +175,7 @@ class Order(BaseModel):
     total_cents: int = Field(tag=6)
     tracking_number: str = Field(tag=7)
     carrier: str = Field(tag=8)
-    created_at: int = Field(tag=9)
+    created_at_time: int = Field(tag=9)
     shipping_address: Address = Field(tag=10)
 
 class OrdersState(StateModel):

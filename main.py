@@ -14,7 +14,7 @@ from backend.src.order import OrdersServicer
 from store.v1.store import Product, CartItem, Order, Address
 from store.v1.store_rbt import ProductCatalog, Cart, Orders
 from constants import PRODUCT_CATALOG_ID, USER_ID
-from rbt.v1alpha1.errors_pb2 import NotFound
+from rbt.v1alpha1.errors_pb2 import Aborted
 
 mcp = DurableMCP(path="/mcp")
 
@@ -112,7 +112,6 @@ async def add_item_to_cart(
         item=CartItem(
             product_id=product_id,
             quantity=quantity,
-            added_at=int(time.time() * 1000),
             name=product.name,
             price_cents=product.price_cents,
             picture=product.picture,
@@ -196,8 +195,8 @@ async def checkout(
     cart_response = await Cart.ref(cart_id).get_items(context)
     items = list(cart_response.items)
 
-    if not items:
-        return NotFound()
+    if len(items) == 0:
+        raise Cart.GetItemsAborted(Aborted(), message="Cart is empty.")
 
     subtotal_cents = sum(item.price_cents * item.quantity for item in items)
 
@@ -265,7 +264,7 @@ async def checkout(
         total_cents=total_cents,
         tracking_number=shipping_result["tracking_number"],
         carrier=shipping_result["carrier"],
-        created_at=int(time.time() * 1000),
+        created_at_time=int(time.time() * 1000),
         shipping_address=Address(
             street_address=shipping_street_address,
             city=shipping_city,
@@ -541,11 +540,11 @@ async def initialize(context: InitializeContext):
         ),
     ]
 
-    for product in products:
-        await catalog.idempotently(f"add-product-{product.id}").add_product(
-            context,
-            product=product,
-        )
+    # for product in products:
+    #     await catalog.idempotently(f"add-product-{product.id}").add_product(
+    #         context,
+    #         product=product,
+    #     )
 
 
 async def main():

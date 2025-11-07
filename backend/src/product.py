@@ -43,7 +43,9 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
             if request.product_id == product.id:
                 return GetProductResponse(product=product)
 
-        return NotFound()
+        raise ProductCatalog.GetProductAborted(
+            NotFound(), message=f"Product not found: {request.product_id}"
+        )
 
     async def search_products(
         self,

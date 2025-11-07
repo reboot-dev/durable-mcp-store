@@ -62,7 +62,7 @@ const Orders = () => {
                     Order #{order.orderId}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {formatDate(order.createdAt)}
+                    {formatDate(order.createdAtTime)}
                   </p>
                 </div>
                 <div className="text-right">
