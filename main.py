@@ -14,6 +14,7 @@ from backend.src.order import OrdersServicer
 from store.v1.store import Product, CartItem, Order, Address
 from store.v1.store_rbt import ProductCatalog, Cart, Orders
 from constants import PRODUCT_CATALOG_ID, USER_ID
+from rbt.v1alpha1.errors_pb2 import NotFound
 
 mcp = DurableMCP(path="/mcp")
 
@@ -196,7 +197,7 @@ async def checkout(
     items = list(cart_response.items)
 
     if not items:
-        raise ValueError("Cart is empty")
+        return NotFound()
 
     subtotal_cents = sum(item.price_cents * item.quantity for item in items)
 

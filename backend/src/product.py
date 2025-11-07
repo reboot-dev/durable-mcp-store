@@ -1,11 +1,18 @@
 from store.v1.store import (
-    ListProductsRequest, ListProductsResponse, GetProductRequest,
-    GetProductResponse, SearchProductsRequest, SearchProductsResponse,
-    AddProductRequest, AddProductResponse
+    ListProductsRequest,
+    ListProductsResponse,
+    GetProductRequest,
+    GetProductResponse,
+    SearchProductsRequest,
+    SearchProductsResponse,
+    AddProductRequest,
+    AddProductResponse,
+    CreateCatalogRequest,
 )
 from store.v1.store_rbt import ProductCatalog
 from reboot.aio.auth.authorizers import allow
 from reboot.aio.contexts import ReaderContext, WriterContext
+from rbt.v1alpha1.errors_pb2 import NotFound
 
 
 class ProductCatalogServicer(ProductCatalog.Servicer):
@@ -36,7 +43,7 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
             if request.product_id == product.id:
                 return GetProductResponse(product=product)
 
-        raise ValueError(f"No product found with ID '{request.product_id}'")
+        return NotFound()
 
     async def search_products(
         self,

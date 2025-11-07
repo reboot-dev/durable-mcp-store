@@ -12,12 +12,13 @@ from store.v1.store import (
     EmptyCartResponse,
     CartItem,
     Product,
+    CreateCartRequest,
 )
 from store.v1.store_rbt import Cart, ProductCatalog
 from reboot.aio.auth.authorizers import allow
 from reboot.aio.contexts import ReaderContext, WriterContext
 from constants import PRODUCT_CATALOG_ID
-
+from rbt.v1alpha1.errors_pb2 import NotFound
 
 class CartServicer(Cart.Servicer):
 
@@ -46,9 +47,7 @@ class CartServicer(Cart.Servicer):
             )
             product = product_response.product
         except Exception as e:
-            raise ValueError(
-                f"Failed to fetch product {request.item.product_id}: {str(e)}"
-            )
+            return NotFound()
 
         for existing_item in self.state.items:
             if existing_item.product_id == request.item.product_id:
