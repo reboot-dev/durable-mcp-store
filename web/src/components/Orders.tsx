@@ -11,9 +11,7 @@ const Orders = () => {
   const { useGetOrders } = useOrders({ id });
   const { response } = useGetOrders();
 
-  if (response === undefined) return <>Loading...</>;
-
-  const orders = response.orders?.elements ?? [];
+  const orders = response?.orders?.elements ?? [];
 
   const formatPrice = (cents?: bigint) => {
     if (!cents) return "$0.00";

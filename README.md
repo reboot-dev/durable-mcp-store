@@ -1,7 +1,5 @@
 # durable-mcp-store
 
-## NOTE: This repo is not currently functional. For review only, not use.
-
 An store checkout example using Reboot's durable-mcp-python, mcp, and mcp-ui.
 
 # To run backend:
@@ -9,6 +7,7 @@ An store checkout example using Reboot's durable-mcp-python, mcp, and mcp-ui.
 - `uv sync`
 - `source .venv/bin/activate`
 - `rbt dev run`
+- To simulate a failure run: `FAIL_CHECKOUT=true rbt dev run`
 
 # To run mcp-ui components:
 
@@ -19,8 +18,8 @@ An store checkout example using Reboot's durable-mcp-python, mcp, and mcp-ui.
 # Connect to Goose
 
 - Note: Goose must have an API key for e.g., OpenAI, Claude.
-- Open Extension -> Add custom extension
-- Extension name, e.g., "Shopping"
-- Type: Streamable HTTP
-- Description: "A collection of Reboot-backed shopping endpoints"
-- Select "Add Extension"
+- Open Extension -> Add custom extension.
+- Extension name, e.g., "Shopping".
+- Type: Streamable HTTP.
+- Description: "A collection of Reboot-backed shopping endpoints".
+- Select "Add Extension".

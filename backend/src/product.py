@@ -6,7 +6,6 @@ from store.v1.store import (
     SearchProductsRequest,
     SearchProductsResponse,
     AddProductRequest,
-    AddProductResponse,
     CreateCatalogRequest,
 )
 from store.v1.store_rbt import ProductCatalog
@@ -26,6 +25,8 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         request: CreateCatalogRequest,
     ) -> None:
         self.state.products = []
+
+        return None
 
     async def list_products(
         self,
@@ -71,11 +72,11 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         self,
         context: WriterContext,
         request: AddProductRequest,
-    ) -> AddProductResponse:
+    ) -> None:
         for product in self.state.products:
             if product.id == request.product.id:
-                return AddProductResponse()
+                return None
 
         self.state.products.append(request.product)
 
-        return AddProductResponse()
+        return None

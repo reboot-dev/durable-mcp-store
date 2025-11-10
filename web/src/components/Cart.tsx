@@ -11,9 +11,7 @@ const Cart = () => {
   const { useGetItems, removeItem, updateItemQuantity } = useCart({ id });
   const { response } = useGetItems();
 
-  if (response === undefined) return <>"Loading..."</>;
-
-  const items = response.items?.elements ?? [];
+  const items = response?.items?.elements ?? [];
 
   const formatPrice = (priceCents?: bigint) => {
     if (!priceCents) return "$0.00";
@@ -80,7 +78,7 @@ const Cart = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-28 flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h2 className="text-sm font-bold text-gray-800 mb-1">
             Your cart is empty

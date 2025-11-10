@@ -1,15 +1,11 @@
 import time
 from store.v1.store import (
     AddItemRequest,
-    AddItemResponse,
     GetItemsRequest,
     GetItemsResponse,
     UpdateItemQuantityRequest,
-    UpdateItemQuantityResponse,
     RemoveItemRequest,
-    RemoveItemResponse,
     EmptyCartRequest,
-    EmptyCartResponse,
     CartItem,
     Product,
     CreateCartRequest,
@@ -26,18 +22,11 @@ class CartServicer(Cart.Servicer):
     def authorizer(self):
         return allow()
 
-    async def create_cart(
-        self,
-        context: WriterContext,
-        request: CreateCartRequest,
-    ) -> None:
-        self.state.items = []
-
     async def add_item(
         self,
         context: WriterContext,
         request: AddItemRequest,
-    ) -> AddItemResponse:
+    ) -> None:
 
         try:
             product_response = await ProductCatalog.ref(
@@ -48,15 +37,18 @@ class CartServicer(Cart.Servicer):
             )
             product = product_response.product
         except Exception as e:
-            raise Cart.CreateCartAborted(
+            raise Cart.AddItemAborted(
                 NotFound(),
                 message=f"Product not found: {request.item.product_id}"
             )
 
+        if (not self.state.items):
+            self.state.items = []
+
         for existing_item in self.state.items:
             if existing_item.product_id == request.item.product_id:
                 existing_item.quantity += request.item.quantity
-                return AddItemResponse()
+                return None
 
         new_item = CartItem(
             product_id=request.item.product_id,
@@ -67,44 +59,50 @@ class CartServicer(Cart.Servicer):
         )
         self.state.items.append(new_item)
 
-        return AddItemResponse()
+        return None
 
     async def get_items(
         self,
         context: ReaderContext,
         request: GetItemsRequest,
     ) -> GetItemsResponse:
-        return GetItemsResponse(items=self.state.items)
+        return GetItemsResponse(items=self.state.items or [])
 
     async def update_item_quantity(
         self,
         context: WriterContext,
         request: UpdateItemQuantityRequest,
-    ) -> UpdateItemQuantityResponse:
+    ) -> None:
+        if (not self.state.items):
+            self.state.items = []
+
         for item in self.state.items:
             if item.product_id == request.product_id:
                 item.quantity = request.quantity
                 break
 
-        return UpdateItemQuantityResponse()
+        return None
 
     async def remove_item(
         self,
         context: WriterContext,
         request: RemoveItemRequest,
-    ) -> RemoveItemResponse:
+    ) -> None:
+        if (not self.state.items):
+            return None
+
         for i, item in enumerate(self.state.items):
             if item.product_id == request.product_id:
                 del self.state.items[i]
                 break
 
-        return RemoveItemResponse()
+        return None
 
     async def empty_cart(
         self,
         context: WriterContext,
         request: EmptyCartRequest,
-    ) -> EmptyCartResponse:
+    ) -> None:
         self.state.items = []
 
-        return EmptyCartResponse()
+        return None

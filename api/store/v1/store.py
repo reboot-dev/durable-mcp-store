@@ -29,9 +29,6 @@ class CartState(StateModel):
 class AddItemRequest(BaseModel):
     item: CartItem = Field(tag=1)
 
-class AddItemResponse(BaseModel):
-    pass
-
 class GetItemsRequest(BaseModel):
     pass
 
@@ -42,19 +39,10 @@ class UpdateItemQuantityRequest(BaseModel):
     product_id: str = Field(tag=1)
     quantity: int = Field(tag=2)
 
-class UpdateItemQuantityResponse(BaseModel):
-    pass
-
 class RemoveItemRequest(BaseModel):
     product_id: str = Field(tag=1)
 
-class RemoveItemResponse(BaseModel):
-    pass
-
 class EmptyCartRequest(BaseModel):
-    pass
-
-class EmptyCartResponse(BaseModel):
     pass
 
 class CreateCartRequest(BaseModel):
@@ -63,7 +51,7 @@ class CreateCartRequest(BaseModel):
 CartMethods = Methods(
     add_item=Writer(
         request=AddItemRequest,
-        response=AddItemResponse,
+        response=None,
     ),
     get_items=Reader(
         request=GetItemsRequest,
@@ -71,20 +59,15 @@ CartMethods = Methods(
     ),
     update_item_quantity=Writer(
         request=UpdateItemQuantityRequest,
-        response=UpdateItemQuantityResponse,
+        response=None,
     ),
     remove_item=Writer(
         request=RemoveItemRequest,
-        response=RemoveItemResponse,
+        response=None,
     ),
     empty_cart=Writer(
         request=EmptyCartRequest,
-        response=EmptyCartResponse,
-    ),
-    create_cart=Writer(
-        request=CreateCartRequest,
         response=None,
-        factory=True,
     ),
 )
 
@@ -125,9 +108,6 @@ class SearchProductsResponse(BaseModel):
 class AddProductRequest(BaseModel):
     product: Product = Field(tag=1)
 
-class AddProductResponse(BaseModel):
-    pass
-
 class CreateCatalogRequest(BaseModel):
     pass
 
@@ -146,7 +126,7 @@ ProductCatalogMethods = Methods(
     ),
     add_product=Writer(
         request=AddProductRequest,
-        response=AddProductResponse,
+        response=None,
     ),
     create_catalog=Writer(
         request=CreateCatalogRequest,
@@ -184,9 +164,6 @@ class OrdersState(StateModel):
 class AddOrderRequest(BaseModel):
     order: Order = Field(tag=1)
 
-class AddOrderResponse(BaseModel):
-    pass
-
 class GetOrdersRequest(BaseModel):
     pass
 
@@ -199,17 +176,12 @@ class CreateOrdersRequest(BaseModel):
 OrdersMethods = Methods(
     add_order=Writer(
         request=AddOrderRequest,
-        response=AddOrderResponse,
+        response=None,
     ),
     get_orders=Reader(
         request=GetOrdersRequest,
         response=GetOrdersResponse,
-    ),
-    create_orders=Writer(
-        request=CreateOrdersRequest,
-        response=None,
-        factory=True,
-    ),
+    )
 )
 
 ########################################################################

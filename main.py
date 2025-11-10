@@ -190,7 +190,7 @@ async def checkout(
         shipping_zip_code: Shipping zip code
     """
     cart_id = USER_ID
-    order_id = USER_ID
+    orders_id = USER_ID
 
     cart_response = await Cart.ref(cart_id).get_items(context)
     items = list(cart_response.items)
@@ -274,7 +274,7 @@ async def checkout(
         ),
     )
 
-    await Orders.ref(order_id).add_order(context, order=order)
+    await Orders.ref(orders_id).add_order(context, order=order)
 
     await Cart.ref(cart_id).empty_cart(context)
 
@@ -540,11 +540,11 @@ async def initialize(context: InitializeContext):
         ),
     ]
 
-    # for product in products:
-    #     await catalog.idempotently(f"add-product-{product.id}").add_product(
-    #         context,
-    #         product=product,
-    #     )
+    for product in products:
+        await catalog.idempotently(f"add-product-{product.id}").add_product(
+            context,
+            product=product,
+        )
 
 
 async def main():
