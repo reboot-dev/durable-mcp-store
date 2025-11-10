@@ -1,23 +1,18 @@
 import { useSearchParams } from "react-router-dom";
 import { useOrders } from "../../api/store/v1/store_rbt_react";
+import { formatPrice } from "../utils";
 
 const Orders = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("orders_id");
   if (id === null) {
-    throw new Error("orders_id is required in query params");
+    return <>Error: orders_id required in query params.</>;
   }
 
   const { useGetOrders } = useOrders({ id });
   const { response } = useGetOrders();
 
   const orders = response?.orders?.elements ?? [];
-
-  const formatPrice = (cents?: bigint) => {
-    if (!cents) return "$0.00";
-    const dollars = Number(cents) / 100;
-    return `$${dollars.toFixed(2)}`;
-  };
 
   const formatDate = (timestamp?: bigint) => {
     if (!timestamp) return "N/A";
@@ -75,8 +70,11 @@ const Orders = () => {
                   Items:
                 </h3>
                 <div className="space-y-2">
-                  {(order.items?.elements ?? []).map((item, index: number) => (
-                    <div key={index} className="flex items-center gap-3">
+                  {(order.items?.elements ?? []).map((item) => (
+                    <div
+                      key={item.productId}
+                      className="flex items-center gap-3"
+                    >
                       <img
                         src={item.picture ?? ""}
                         alt={item.name ?? "Product"}

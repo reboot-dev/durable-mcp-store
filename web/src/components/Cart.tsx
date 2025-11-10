@@ -1,23 +1,18 @@
 import { useSearchParams } from "react-router-dom";
 import { useCart } from "../../api/store/v1/store_rbt_react";
+import { formatPrice, sendPromptToParent } from "../utils";
 
 const Cart = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("cart_id");
   if (id === null) {
-    throw new Error("cart_id is required in query params");
+    return <>Error: cart_id required in query params.</>;
   }
 
   const { useGetItems, removeItem, updateItemQuantity } = useCart({ id });
   const { response } = useGetItems();
 
   const items = response?.items?.elements ?? [];
-
-  const formatPrice = (priceCents?: bigint) => {
-    if (!priceCents) return "$0.00";
-    const dollars = Number(priceCents) / 100;
-    return `$${dollars.toFixed(2)}`;
-  };
 
   const calculateTotal = () => {
     return (
@@ -32,48 +27,20 @@ const Cart = () => {
   const updateQuantity = (productId: string, newQuantity: number) => {
     updateItemQuantity({ productId, quantity: BigInt(newQuantity) });
 
-    if (window.parent) {
-      window.parent.postMessage(
-        {
-          type: "prompt",
-          payload: {
-            prompt: `The quantity of product ${productId} has been updated to
-                    ${newQuantity} in my cart.`,
-          },
-        },
-        "*"
-      );
-    }
+    sendPromptToParent(
+      `The quantity of product ${productId} has been updated to ${newQuantity} 
+      in my cart.`
+    );
   };
 
   const removeCartItem = (productId: string) => {
     removeItem({ productId });
 
-    if (window.parent) {
-      window.parent.postMessage(
-        {
-          type: "prompt",
-          payload: {
-            prompt: `Product ${productId} has been removed from my cart.`,
-          },
-        },
-        "*"
-      );
-    }
+    sendPromptToParent(`Product ${productId} has been removed from my cart.`);
   };
 
   const checkout = () => {
-    if (window.parent) {
-      window.parent.postMessage(
-        {
-          type: "prompt",
-          payload: {
-            prompt: `Start checkout process`,
-          },
-        },
-        "*"
-      );
-    }
+    sendPromptToParent(`Start checkout process`);
   };
 
   if (items.length === 0) {
@@ -134,9 +101,12 @@ const Cart = () => {
                         Number(item.quantity ?? 1n) - 1
                       )
                     }
+                    disabled={Number(item.quantity ?? 1n) <= 1}
                     className="w-5 h-5 flex items-center justify-center
                               rounded-full bg-gray-200 hover:bg-gray-300
-                              text-gray-800 text-xs font-bold"
+                              text-gray-800 text-xs font-bold
+                              disabled:opacity-50 disabled:cursor-not-allowed
+                              disabled:hover:bg-gray-200"
                   >
                     −
                   </button>

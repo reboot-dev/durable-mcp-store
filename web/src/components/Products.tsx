@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useProductCatalog } from "../../api/store/v1/store_rbt_react";
 import { PRODUCT_CATALOG_ID } from "../../constants";
+import { formatPrice, sendPromptToParent } from "../utils";
 
 const Products = () => {
   const [searchParams] = useSearchParams();
@@ -26,25 +27,10 @@ const Products = () => {
       })
     : products;
 
-  const formatPrice = (priceCents?: bigint) => {
-    if (!priceCents) return "$0.00";
-    const dollars = Number(priceCents) / 100;
-    return `$${dollars.toFixed(2)}`;
-  };
-
   const addToCart = (product: (typeof products)[number]) => {
-    if (window.parent) {
-      window.parent.postMessage(
-        {
-          type: "prompt",
-          payload: {
-            prompt: `Add one ${product.name} to my cart 
-                    (product ID: ${product.id})`,
-          },
-        },
-        "*"
-      );
-    }
+    sendPromptToParent(
+      `Add one ${product.name} to my cart (product ID: ${product.id})`
+    );
   };
 
   if (filteredProducts.length === 0) {

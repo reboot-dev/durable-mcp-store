@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import { formatPrice } from "../utils";
 
 const Order = () => {
   const [searchParams] = useSearchParams();
@@ -27,11 +28,6 @@ const Order = () => {
     trackingNumber,
   ] = data.split("|");
 
-  const formatPrice = (cents: string) => {
-    const dollars = parseInt(cents) / 100;
-    return `$${dollars.toFixed(2)}`;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 p-2">
       <div className="max-w-2xl mx-auto">
@@ -48,18 +44,18 @@ const Order = () => {
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Subtotal:</span>
               <span className="text-gray-900">
-                {formatPrice(subtotalCents)}
+                {formatPrice(BigInt(subtotalCents))}
               </span>
             </div>
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Shipping:</span>
               <span className="text-gray-900">
-                {formatPrice(shippingCents)}
+                {formatPrice(BigInt(shippingCents))}
               </span>
             </div>
             <div className="flex justify-between text-base font-bold">
               <span className="text-gray-900">Total:</span>
-              <span className="text-gray-900">{formatPrice(totalCents)}</span>
+              <span className="text-gray-900">{formatPrice(BigInt(totalCents))}</span>
             </div>
           </div>
 
