@@ -21,5 +21,6 @@ An store checkout example using Reboot's durable-mcp-python, mcp, and mcp-ui.
 - Open Extension -> Add custom extension.
 - Extension name, e.g., "Shopping".
 - Type: Streamable HTTP.
+- Endpoint `http://127.0.0.1:9991/mcp`
 - Description: "A collection of Reboot-backed shopping endpoints".
 - Select "Add Extension".

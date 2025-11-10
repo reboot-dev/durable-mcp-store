@@ -171,10 +171,16 @@ async def ship_order(items: list, address: dict, carrier: str) -> dict:
 
 @mcp.tool()
 async def checkout(
-    card_number: str, card_cvv: int, card_expiration_month: int,
-    card_expiration_year: int, shipping_street_address: str,
-    shipping_city: str, shipping_state: str, shipping_country: str,
-    shipping_zip_code: str, context: DurableContext
+    card_number: str,
+    card_cvv: int,
+    card_expiration_month: int,
+    card_expiration_year: int,
+    shipping_street_address: str,
+    shipping_city: str,
+    shipping_state: str,
+    shipping_country: str,
+    shipping_zip_code: str,
+    context: DurableContext,
 ) -> list[UIResource]:
     """Complete the checkout process for items in the cart.
 
@@ -253,7 +259,15 @@ async def checkout(
         type=dict,
     )
 
-    order_id = f"order_{random.randint(100000, 999999)}"
+    async def generate_order_id() -> str:
+        return f"order_{random.randint(100000, 999999)}"
+
+    order_id = await at_least_once(
+        "Generate order ID",
+        context,
+        generate_order_id,
+        type=str,
+    )
 
     order = Order(
         order_id=order_id,
