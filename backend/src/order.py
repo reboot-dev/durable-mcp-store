@@ -4,10 +4,14 @@ from store.v1.store import (
     GetOrdersResponse,
     AddOrderRequest,
     CreateOrdersRequest,
+    Order,
 )
 from store.v1.store_rbt import Orders
 from reboot.aio.auth.authorizers import allow
 from reboot.aio.contexts import ReaderContext, WriterContext
+from reboot.std.collections.ordered_map.v1.ordered_map import OrderedMap
+from reboot.protobuf import from_model, as_model
+from constants import ORDERS_ID
 
 
 class OrdersServicer(Orders.Servicer):
@@ -20,10 +24,14 @@ class OrdersServicer(Orders.Servicer):
         context: WriterContext,
         request: AddOrderRequest,
     ) -> None:
-        if (not self.state.orders):
-            self.state.orders = []
+        if (not self.state.orders_ordered_map_id):
+            self.state.orders_ordered_map_id = ORDERS_ID
 
-        self.state.orders.append(request.order)
+        await OrderedMap.ref(self.state.orders_ordered_map_id).insert(
+            context,
+            key=request.order.order_id,
+            value=from_model(request.order),
+        )
 
         return None
 
@@ -32,4 +40,14 @@ class OrdersServicer(Orders.Servicer):
         context: ReaderContext,
         request: GetOrdersRequest,
     ) -> GetOrdersResponse:
-        return GetOrdersResponse(orders=self.state.orders or [])
+        # TODO: Add pagination.
+        orders_range = await OrderedMap.ref(
+            self.state.orders_ordered_map_id
+        ).range(context, limit=300)
+
+        return GetOrdersResponse(
+            orders=[
+                as_model(order.value, model_type=Order)
+                for order in orders_range.entries
+            ]
+        )

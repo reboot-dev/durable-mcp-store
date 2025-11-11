@@ -15,6 +15,7 @@ from store.v1.store import Product, CartItem, Order, Address
 from store.v1.store_rbt import ProductCatalog, Cart, Orders
 from constants import PRODUCT_CATALOG_ID, USER_ID
 from rbt.v1alpha1.errors_pb2 import Aborted
+from reboot.std.collections.ordered_map.v1 import ordered_map
 
 mcp = DurableMCP(path="/mcp")
 
@@ -30,6 +31,9 @@ def show_products(
         search_query: The search term to filter products (e.g., 'shirts', 
         'pants', 'blue').
     """
+    if search_query == "all":
+        search_query = ""
+
     encoded_query = urllib.parse.quote(search_query or "")
 
     iframe_url = "http://localhost:3000/products"
@@ -568,7 +572,7 @@ async def main():
             CartServicer,
             ProductCatalogServicer,
             OrdersServicer,
-        ],
+        ] + ordered_map.servicers(),
         initialize=initialize,
     ).run()
 

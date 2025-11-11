@@ -85,7 +85,7 @@ class Product(BaseModel):
     stock_quantity: int = Field(tag=7)
 
 class ProductCatalogState(StateModel):
-    products: list[Product] = Field(tag=1)
+    product_catalog_ordered_map_id: str = Field(tag=1)
 
 class ListProductsRequest(BaseModel):
     pass
@@ -98,12 +98,6 @@ class GetProductRequest(BaseModel):
 
 class GetProductResponse(BaseModel):
     product: Product = Field(tag=1)
-
-class SearchProductsRequest(BaseModel):
-    query: str = Field(tag=1)
-
-class SearchProductsResponse(BaseModel):
-    products: list[Product] = Field(tag=1)
 
 class AddProductRequest(BaseModel):
     product: Product = Field(tag=1)
@@ -120,11 +114,7 @@ ProductCatalogMethods = Methods(
         request=GetProductRequest,
         response=GetProductResponse,
     ),
-    search_products=Reader(
-        request=SearchProductsRequest,
-        response=SearchProductsResponse,
-    ),
-    add_product=Writer(
+    add_product=Transaction(
         request=AddProductRequest,
         response=None,
     ),
@@ -159,7 +149,7 @@ class Order(BaseModel):
     shipping_address: Address = Field(tag=10)
 
 class OrdersState(StateModel):
-    orders: Optional[list[Order]] = Field(tag=1)
+    orders_ordered_map_id: Optional[str] = Field(tag=1)
 
 class AddOrderRequest(BaseModel):
     order: Order = Field(tag=1)
@@ -174,7 +164,7 @@ class CreateOrdersRequest(BaseModel):
     pass
 
 OrdersMethods = Methods(
-    add_order=Writer(
+    add_order=Transaction(
         request=AddOrderRequest,
         response=None,
     ),
