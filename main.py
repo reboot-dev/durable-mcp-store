@@ -100,11 +100,12 @@ async def add_item_to_cart(
     """
     cart_id = USER_ID
 
-    get_product_response = await ProductCatalog.ref(PRODUCT_CATALOG_ID
-                                                   ).get_product(
-                                                       context,
-                                                       product_id=product_id,
-                                                   )
+    get_product_response = await ProductCatalog.ref(
+        PRODUCT_CATALOG_ID
+    ).get_product(
+        context,
+        product_id=product_id,
+    )
     product = get_product_response.product
 
     await Cart.ref(cart_id).add_item(
@@ -483,7 +484,7 @@ async def initialize(context: InitializeContext):
             id="accessories-001",
             name="Black Leather Belt",
             description="Premium black leather belt",
-            picture="https://pngimg.com/uploads/belt/belt_PNG5969.png",
+            picture="https://www.hnwilliams.com/wp-content/uploads/2024/01/BLACK_305.jpg",
             price_cents=3500,
             categories=["accessories", "belts", "leather"],
             stock_quantity=40,
@@ -520,7 +521,7 @@ async def initialize(context: InitializeContext):
             id="accessories-005",
             name="Leather Watch",
             description="Brown leather strap watch",
-            picture="https://pngimg.com/uploads/watch/watch_PNG9870.png",
+            picture="https://www.nixon.com/cdn/shop/files/A105-2001-view1.png?v=1718724157",
             price_cents=9500,
             categories=["accessories", "watches", "formal"],
             stock_quantity=15,
@@ -529,7 +530,7 @@ async def initialize(context: InitializeContext):
             id="bags-001",
             name="Black Backpack",
             description="Spacious black backpack",
-            picture="https://pngimg.com/uploads/backpack/backpack_PNG7.png",
+            picture="https://us.oneill.com/cdn/shop/products/SU3195000_BLK_8.jpg?v=1675818358",
             price_cents=6500,
             categories=["bags", "backpacks", "casual"],
             stock_quantity=30,
@@ -538,7 +539,7 @@ async def initialize(context: InitializeContext):
             id="bags-002",
             name="Brown Messenger Bag",
             description="Vintage brown messenger bag",
-            picture="https://pngimg.com/uploads/bag/bag_PNG6399.png",
+            picture="https://www.rustictown.com/cdn/shop/products/Rustictown_LeatherMessengerBagforMen_LeatherSatchelBag_LeatherBriefcase_1074dd7e-52c0-4c38-8f9b-50c833de40e4.webp?v=1681986221&width=2000",
             price_cents=8500,
             categories=["bags", "messenger", "business"],
             stock_quantity=12,
@@ -547,7 +548,7 @@ async def initialize(context: InitializeContext):
             id="bags-003",
             name="Gym Duffel Bag",
             description="Large gym duffel bag",
-            picture="https://pngimg.com/uploads/bag/bag_PNG6399.png",
+            picture="https://totebagfactory.com/cdn/shop/products/quality-black-gym-bag.png?v=1600469072&width=1214",
             price_cents=4899,
             categories=["bags", "sports", "gym"],
             stock_quantity=25,

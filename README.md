@@ -17,7 +17,9 @@ An store checkout example using Reboot's durable-mcp-python, mcp, and mcp-ui.
 
 # Connect to Goose
 
-- Note: Goose must have an API key for e.g., OpenAI, Claude.
+Note: Goose must have an API key for e.g., OpenAI, Claude.
+Tested with Anthropic's claude-sonnet-4.0.
+
 - Open Extension -> Add custom extension.
 - Extension name, e.g., "Shopping".
 - Type: Streamable HTTP.
