@@ -25,7 +25,7 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         context: WriterContext,
         request: CreateCatalogRequest,
     ) -> None:
-        return None
+        return
 
     async def list_products(
         self,
@@ -67,8 +67,6 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
             key=request.product.id,
             value=from_model(request.product),
         )
-
-        return None
 
     @property
     def catalog(self) -> OrderedMap.WeakReference:

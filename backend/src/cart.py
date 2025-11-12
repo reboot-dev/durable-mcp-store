@@ -48,7 +48,7 @@ class CartServicer(Cart.Servicer):
         for existing_item in self.state.items:
             if existing_item.product_id == request.item.product_id:
                 existing_item.quantity += request.item.quantity
-                return None
+                return
 
         new_item = CartItem(
             product_id=request.item.product_id,
@@ -58,8 +58,6 @@ class CartServicer(Cart.Servicer):
             picture=product.picture,
         )
         self.state.items.append(new_item)
-
-        return None
 
     async def get_items(
         self,
@@ -81,22 +79,18 @@ class CartServicer(Cart.Servicer):
                 item.quantity = request.quantity
                 break
 
-        return None
-
     async def remove_item(
         self,
         context: WriterContext,
         request: RemoveItemRequest,
     ) -> None:
         if (not self.state.items):
-            return None
+            return
 
         for i, item in enumerate(self.state.items):
             if item.product_id == request.product_id:
                 del self.state.items[i]
                 break
-
-        return None
 
     async def empty_cart(
         self,
@@ -104,5 +98,3 @@ class CartServicer(Cart.Servicer):
         request: EmptyCartRequest,
     ) -> None:
         self.state.items = []
-
-        return None

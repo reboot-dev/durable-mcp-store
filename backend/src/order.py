@@ -30,8 +30,6 @@ class OrdersServicer(Orders.Servicer):
             value=from_model(request.order),
         )
 
-        return None
-
     async def get_orders(
         self,
         context: ReaderContext,
