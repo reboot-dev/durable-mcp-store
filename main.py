@@ -321,11 +321,6 @@ async def checkout(
 async def initialize(context: InitializeContext):
     """Initialize the product catalog with mock products."""
 
-    catalog, _ = await ProductCatalog.create_catalog(
-        context,
-        PRODUCT_CATALOG_ID,
-    )
-
     products = [
         Product(
             id="shirt-001",
@@ -558,6 +553,8 @@ async def initialize(context: InitializeContext):
             stock_quantity=25,
         ),
     ]
+
+    catalog = await ProductCatalog.ref(PRODUCT_CATALOG_ID)
 
     for product in products:
         await catalog.idempotently(f"add-product-{product.id}").add_product(

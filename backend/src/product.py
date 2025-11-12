@@ -20,13 +20,6 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
     def authorizer(self):
         return allow()
 
-    async def create_catalog(
-        self,
-        context: WriterContext,
-        request: CreateCatalogRequest,
-    ) -> None:
-        return
-
     async def list_products(
         self,
         context: ReaderContext,

@@ -118,11 +118,6 @@ ProductCatalogMethods = Methods(
         request=AddProductRequest,
         response=None,
     ),
-    create_catalog=Writer(
-        request=CreateCatalogRequest,
-        response=None,
-        factory=True,
-    )
 )
 
 ########################################################################
