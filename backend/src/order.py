@@ -24,10 +24,7 @@ class OrdersServicer(Orders.Servicer):
         context: WriterContext,
         request: AddOrderRequest,
     ) -> None:
-        if (not self.state.orders_ordered_map_id):
-            self.state.orders_ordered_map_id = ORDERS_ID
-
-        await OrderedMap.ref(self.state.orders_ordered_map_id).insert(
+        await self.orders.insert(
             context,
             key=request.order.order_id,
             value=from_model(request.order),
@@ -41,9 +38,7 @@ class OrdersServicer(Orders.Servicer):
         request: GetOrdersRequest,
     ) -> GetOrdersResponse:
         # TODO: Add pagination.
-        orders_range = await OrderedMap.ref(
-            self.state.orders_ordered_map_id
-        ).range(context, limit=300)
+        orders_range = await self.orders.range(context, limit=300)
 
         return GetOrdersResponse(
             orders=[
@@ -51,3 +46,8 @@ class OrdersServicer(Orders.Servicer):
                 for order in orders_range.entries
             ]
         )
+
+    @property
+    def orders(self) -> OrderedMap.WeakReference:
+        """Helper to get reference to `OrderedMap` for orders."""
+        return OrderedMap.ref(ORDERS_ID)

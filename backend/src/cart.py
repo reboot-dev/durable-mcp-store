@@ -28,10 +28,10 @@ class CartServicer(Cart.Servicer):
         request: AddItemRequest,
     ) -> None:
 
+        catalog = ProductCatalog.ref(PRODUCT_CATALOG_ID)
+
         try:
-            product_response = await ProductCatalog.ref(
-                PRODUCT_CATALOG_ID
-            ).get_product(
+            product_response = await catalog.get_product(
                 context,
                 product_id=request.item.product_id,
             )
