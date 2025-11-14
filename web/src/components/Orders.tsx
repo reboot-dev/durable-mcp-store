@@ -12,9 +12,9 @@ const Orders = () => {
   const { useGetOrders } = useOrders({ id });
   const { response } = useGetOrders();
 
-  const orders = response?.orders?.elements ?? [];
+  const orders = response?.orders ?? [];
 
-  const formatDate = (timestamp?: bigint) => {
+  const formatDate = (timestamp?: number) => {
     if (!timestamp) return "N/A";
     return new Date(Number(timestamp) * 1000).toLocaleDateString("en-US", {
       year: "numeric",
@@ -70,7 +70,7 @@ const Orders = () => {
                   Items:
                 </h3>
                 <div className="space-y-2">
-                  {(order.items?.elements ?? []).map((item) => (
+                  {(order.items ?? []).map((item) => (
                     <div
                       key={item.productId}
                       className="flex items-center gap-3"

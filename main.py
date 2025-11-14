@@ -554,7 +554,7 @@ async def initialize(context: InitializeContext):
         ),
     ]
 
-    catalog = await ProductCatalog.ref(PRODUCT_CATALOG_ID)
+    catalog = ProductCatalog.ref(PRODUCT_CATALOG_ID)
 
     for product in products:
         await catalog.idempotently(f"add-product-{product.id}").add_product(

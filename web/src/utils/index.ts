@@ -1,4 +1,4 @@
-export const formatPrice = (priceCents?: bigint): string => {
+export const formatPrice = (priceCents?: number): string => {
   if (!priceCents) return "$0.00";
   const dollars = Number(priceCents) / 100;
   return `$${dollars.toFixed(2)}`;
