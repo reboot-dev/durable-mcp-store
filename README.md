@@ -1,6 +1,6 @@
 # durable-mcp-store
 
-An store checkout example using Reboot's durable-mcp-python, mcp, and mcp-ui.
+An AI store example using Reboot's durable-mcp-python, mcp, and mcp-ui.
 
 # To run backend:
 
@@ -21,8 +21,9 @@ Note: Goose must have an API key for e.g., OpenAI, Claude.
 Tested with Anthropic's claude-sonnet-4.0.
 
 - Open Extension -> Add custom extension.
-- Extension name, e.g., "Shopping".
+- Extension name, e.g., "RebootShop".
 - Type: Streamable HTTP.
-- Endpoint `http://127.0.0.1:9991/mcp`
 - Description: "A collection of Reboot-backed shopping endpoints".
+- Endpoint `http://127.0.0.1:9991/mcp`
 - Select "Add Extension".
+- Query examples: "Show me some shoes," "Show me my orders," "Show me my cart."
