@@ -11,7 +11,7 @@ const Products = () => {
   const { response } = useListProducts();
 
   if (response === undefined) return <>Loading...</>;
-  const products = response.products?.elements ?? [];
+  const products = response.products;
 
   const filteredProducts = query
     ? products.filter((p) => {
@@ -20,7 +20,7 @@ const Products = () => {
           (term) =>
             (p.name?.toLowerCase().includes(term) ?? false) ||
             (p.description?.toLowerCase().includes(term) ?? false) ||
-            (p.categories?.elements ?? []).some((cat: string) =>
+            (p.categories ?? []).some((cat: string) =>
               cat.toLowerCase().includes(term)
             )
         );
@@ -103,7 +103,7 @@ const Products = () => {
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3
                               py-1.5 rounded text-xs font-medium
                               transition-colors whitespace-nowrap"
-                    disabled={product.stockQuantity === 0n}
+                    disabled={product.stockQuantity === 0}
                   >
                     {(product.stockQuantity ?? 0n) > 0n
                       ? "Add to Cart"

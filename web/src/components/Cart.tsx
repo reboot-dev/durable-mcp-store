@@ -12,7 +12,7 @@ const Cart = () => {
   const { useGetItems, removeItem, updateItemQuantity } = useCart({ id });
   const { response } = useGetItems();
 
-  const items = response?.items?.elements ?? [];
+  const items = response?.items ?? [];
 
   const calculateTotal = () => {
     return (
@@ -25,7 +25,7 @@ const Cart = () => {
   };
 
   const updateQuantity = (productId: string, newQuantity: number) => {
-    updateItemQuantity({ productId, quantity: BigInt(newQuantity) });
+    updateItemQuantity({ productId, quantity: newQuantity });
 
     sendPromptToParent(
       `The quantity of product ${productId} has been updated to ${newQuantity} 

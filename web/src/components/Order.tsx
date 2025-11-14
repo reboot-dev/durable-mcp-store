@@ -44,18 +44,20 @@ const Order = () => {
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Subtotal:</span>
               <span className="text-gray-900">
-                {formatPrice(BigInt(subtotalCents))}
+                {formatPrice(Number(subtotalCents))}
               </span>
             </div>
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-600">Shipping:</span>
               <span className="text-gray-900">
-                {formatPrice(BigInt(shippingCents))}
+                {formatPrice(Number(shippingCents))}
               </span>
             </div>
             <div className="flex justify-between text-base font-bold">
               <span className="text-gray-900">Total:</span>
-              <span className="text-gray-900">{formatPrice(BigInt(totalCents))}</span>
+              <span className="text-gray-900">
+                {formatPrice(Number(totalCents))}
+              </span>
             </div>
           </div>
 

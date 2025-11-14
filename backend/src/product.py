@@ -20,24 +20,13 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
     def authorizer(self):
         return allow()
 
-    async def create_catalog(
-        self,
-        context: WriterContext,
-        request: CreateCatalogRequest,
-    ) -> None:
-        self.state.product_catalog_ordered_map_id = PRODUCT_CATALOG_ID
-
-        return None
-
     async def list_products(
         self,
         context: ReaderContext,
         request: ListProductsRequest,
     ) -> ListProductsResponse:
         # TODO: Add pagination.
-        products_range = await OrderedMap.ref(
-            self.state.product_catalog_ordered_map_id
-        ).range(context, limit=300)
+        products_range = await self.catalog.range(context, limit=300)
 
         products = [
             as_model(product.value, model_type=Product)
@@ -51,9 +40,7 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         context: ReaderContext,
         request: GetProductRequest,
     ) -> GetProductResponse:
-        response = await OrderedMap.ref(
-            self.state.product_catalog_ordered_map_id
-        ).search(context, key=request.product_id)
+        response = await self.catalog.search(context, key=request.product_id)
 
         if response.found:
             product = as_model(response.value, model_type=Product)
@@ -68,10 +55,13 @@ class ProductCatalogServicer(ProductCatalog.Servicer):
         context: TransactionContext,
         request: AddProductRequest,
     ) -> None:
-        await OrderedMap.ref(self.state.product_catalog_ordered_map_id).insert(
+        await self.catalog.insert(
             context,
             key=request.product.id,
             value=from_model(request.product),
         )
 
-        return None
+    @property
+    def catalog(self) -> OrderedMap.WeakReference:
+        """Helper to get reference to `OrderedMap` for catalog."""
+        return OrderedMap.ref(PRODUCT_CATALOG_ID)

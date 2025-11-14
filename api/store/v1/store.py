@@ -85,7 +85,7 @@ class Product(BaseModel):
     stock_quantity: int = Field(tag=7)
 
 class ProductCatalogState(StateModel):
-    product_catalog_ordered_map_id: str = Field(tag=1)
+    pass
 
 class ListProductsRequest(BaseModel):
     pass
@@ -118,11 +118,6 @@ ProductCatalogMethods = Methods(
         request=AddProductRequest,
         response=None,
     ),
-    create_catalog=Writer(
-        request=CreateCatalogRequest,
-        response=None,
-        factory=True,
-    )
 )
 
 ########################################################################
@@ -149,7 +144,7 @@ class Order(BaseModel):
     shipping_address: Address = Field(tag=10)
 
 class OrdersState(StateModel):
-    orders_ordered_map_id: Optional[str] = Field(tag=1)
+    pass
 
 class AddOrderRequest(BaseModel):
     order: Order = Field(tag=1)
