@@ -6,7 +6,7 @@ import urllib.parse
 from mcp_ui_server import create_ui_resource
 from mcp_ui_server.core import UIResource
 from reboot.aio.external import InitializeContext
-from reboot.aio.workflows import at_least_once, at_most_once
+from reboot.aio.workflows import at_least_once
 from reboot.mcp.server import DurableMCP, DurableContext
 from backend.src.cart import CartServicer
 from backend.src.product import ProductCatalogServicer
@@ -242,17 +242,18 @@ async def checkout(
             total_cents,
         )
 
-    # Simulate failure for testing retry logic.
-    # To simulate failure set the environment variable FAIL_CHECKOUT=anything.
-    if os.environ.get("FAIL_CHECKOUT"):
-        await asyncio.Event().wait()
-
     charge_result = await at_least_once(
         "Charge credit card",
         context,
         charge_card,
         type=dict,
     )
+
+    # Simulate failure for testing retry logic.
+    # To simulate failure set the environment variable FAIL_CHECKOUT=anything.
+    if os.environ.get("FAIL_CHECKOUT"):
+        await asyncio.Event().wait()
+
 
     async def ship() -> dict:
         return await ship_order(items, address, shipping_quote["carrier"])
